@@ -11,21 +11,26 @@ router.post('/', (req, res, next) => {
         const { username, display_name, user_type = 'member' } = data;
         // 验证
         if (!username || username.trim().length < 3 || username.trim().length > 20) {
-            return res.status(400).json({ error: '用户名必须是3-20个字符' });
+            res.status(400).json({ error: '用户名必须是3-20个字符' });
+            return;
         }
         if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-            return res.status(400).json({ error: '用户名只能包含字母、数字和下划线' });
+            res.status(400).json({ error: '用户名只能包含字母、数字和下划线' });
+            return;
         }
         if (!display_name || display_name.trim().length === 0 || display_name.length > 50) {
-            return res.status(400).json({ error: '显示名称必须是1-50个字符' });
+            res.status(400).json({ error: '显示名称必须是1-50个字符' });
+            return;
         }
         if (user_type !== 'owner' && user_type !== 'member') {
-            return res.status(400).json({ error: '用户类型必须是owner或member' });
+            res.status(400).json({ error: '用户类型必须是owner或member' });
+            return;
         }
         // 检查用户名是否已存在
         const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username.trim());
         if (existing) {
-            return res.status(409).json({ error: '用户名已存在' });
+            res.status(409).json({ error: '用户名已存在' });
+            return;
         }
         const stmt = db.prepare(`
       INSERT INTO users (username, display_name, user_type)
@@ -36,7 +41,7 @@ router.post('/', (req, res, next) => {
         res.status(201).json({ data: user });
     }
     catch (error) {
-        return next(error);
+        next(error);
     }
 });
 /**
@@ -71,6 +76,30 @@ router.get('/:id', (req, res, next) => {
         if (!user) {
             return res.status(404).json({ error: '用户不存在' });
         }
+        res.json({ data: user });
+    }
+    catch (error) {
+        return next(error);
+    }
+});
+/**
+ * PATCH /api/users/:id
+ * 更新用户信息（主要是display_name）
+ */
+router.patch('/:id', (req, res, next) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (isNaN(id)) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        const { display_name } = req.body;
+        if (display_name !== undefined) {
+            if (!display_name || display_name.trim().length === 0 || display_name.length > 50) {
+                return res.status(400).json({ error: '显示名称必须是1-50个字符' });
+            }
+            db.prepare('UPDATE users SET display_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(display_name.trim(), id);
+        }
+        const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
         res.json({ data: user });
     }
     catch (error) {

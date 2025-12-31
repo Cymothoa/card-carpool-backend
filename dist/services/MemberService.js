@@ -40,13 +40,13 @@ export class MemberService {
     bulkCreate(cardGroupId, data) {
         let membersToCreate = [];
         if (data.preset === 'cortis_all') {
-            // cortis全员：成员1-5
+            // cortis全员：成员1-5，使用真实姓名
             membersToCreate = [
-                { member_number: '1', member_name: 'cortis 1' },
-                { member_number: '2', member_name: 'cortis 2' },
-                { member_number: '3', member_name: 'cortis 3' },
-                { member_number: '4', member_name: 'cortis 4' },
-                { member_number: '5', member_name: 'cortis 5' },
+                { member_number: '1', member_name: 'JAMES' },
+                { member_number: '2', member_name: 'JUHOON' },
+                { member_number: '3', member_name: 'MARTIN' },
+                { member_number: '4', member_name: 'SEONGHYEON' },
+                { member_number: '5', member_name: 'KEONHO' },
             ];
         }
         else if (data.members && data.members.length > 0) {

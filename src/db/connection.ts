@@ -15,6 +15,7 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
+// 创建数据库实例
 const db = new Database(dbPath);
 
 // 启用外键约束

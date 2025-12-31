@@ -1,8 +1,8 @@
 export declare const config: {
     port: number;
-    nodeEnv: string;
-    dbPath: string;
-    corsOrigin: string;
+    nodeEnv: any;
+    dbPath: any;
+    corsOrigin: any;
     sseHeartbeatInterval: number;
 };
 //# sourceMappingURL=env.d.ts.map
